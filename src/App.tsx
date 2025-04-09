@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -20,6 +19,7 @@ const App = () => {
 
   const [modelQuery, setModelQuery] = useState('');
   const [models, setModels] = useState<string[]>([]);
+  const [filteredModels, setFilteredModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
   const fetchBrands = async (search: string) => {
@@ -79,11 +79,8 @@ const App = () => {
 
   const handleModelChange = (text: string) => {
     setModelQuery(text);
-    clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-      fetchModels(text);
-    }, 500);
+    const filtered = models.filter((model) => model.toLowerCase().includes(text.toLowerCase()));
+    setFilteredModels(filtered);
   };
 
   const handleSelectBrand = (brand: string) => {
@@ -131,7 +128,7 @@ const App = () => {
 
       {!loadingModels && models.length > 0 && (
         <FlatList
-          data={models}
+          data={filteredModels.length > 0 ? filteredModels : models}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleSelectModel(item)} style={styles.option}>
