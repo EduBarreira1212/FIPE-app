@@ -34,10 +34,10 @@ const App = () => {
         `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json`
       );
 
-      const names = res.data.results.map((item: any) => item.MakeName);
-      console.log(names);
-      setBrands(names);
+      const names = res.data.Results.map((item: any) => item.MakeName);
+      setBrands(names.filter((item: string) => item.includes(query)));
     } catch (error) {
+      console.error(error);
       setBrands([]);
     } finally {
       setLoading(false);
@@ -57,22 +57,22 @@ const App = () => {
         `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${search}?format=json`
       );
 
-      const names = res.data.results.map((item: any) => item.MakeName);
-      console.log(names);
-      setBrands(names);
+      const names = res.data.Results.map((item: any) => item.Model_Name);
+      setModels(names);
     } catch (error) {
+      console.error(error);
       setBrands([]);
     } finally {
-      setLoading(false);
+      setLoadingModels(false);
     }
   };
 
   const handleChange = (text: string) => {
-    setQuery(text);
+    setQuery(text.toUpperCase());
     clearTimeout(timeout);
 
     timeout = setTimeout(() => {
-      fetchModels(text);
+      fetchBrands(text);
     }, 500);
   };
 
@@ -85,7 +85,13 @@ const App = () => {
     }, 500);
   };
 
-  const handleSelect = (model: string) => {
+  const handleSelectBrand = (brand: string) => {
+    setQuery(brand);
+    setBrands([]);
+    fetchModels(brand);
+  };
+
+  const handleSelectModel = (model: string) => {
     setModelQuery(model);
     setModels([]);
   };
@@ -106,7 +112,7 @@ const App = () => {
           data={brands}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item)} style={styles.option}>
+            <TouchableOpacity onPress={() => handleSelectBrand(item)} style={styles.option}>
               <Text>{item}</Text>
             </TouchableOpacity>
           )}
@@ -127,7 +133,7 @@ const App = () => {
           data={models}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item)} style={styles.option}>
+            <TouchableOpacity onPress={() => handleSelectModel(item)} style={styles.option}>
               <Text>{item}</Text>
             </TouchableOpacity>
           )}
