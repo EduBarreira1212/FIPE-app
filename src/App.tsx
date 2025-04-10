@@ -25,12 +25,16 @@ type Model = {
 const App = () => {
   const [query, setQuery] = useState('');
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [brandSelected, setBrandSelected] = useState<Brand>();
   const [loading, setLoading] = useState(false);
 
   const [modelQuery, setModelQuery] = useState('');
   const [models, setModels] = useState<Model[]>([]);
   const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
+
+  const [fipeInfo, setFipeInfo] = useState('');
+  const [loadingFipeInfo, setLoadingFipeInfo] = useState(false);
 
   const fetchBrands = async (search: string) => {
     if (!search) {
@@ -78,6 +82,29 @@ const App = () => {
     }
   };
 
+  const fetchFipeInfo = async (brandCode: string, modelCode: string, yearCode: string) => {
+    if (!(brandCode && modelCode && yearCode)) {
+      setFipeInfo('');
+      return;
+    }
+
+    setLoadingFipeInfo(true);
+
+    try {
+      const res = await axios.get(
+        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models/${modelCode}/years/${yearCode}`
+      );
+
+      const fipeInfo = res.data;
+      setFipeInfo(fipeInfo);
+    } catch (error) {
+      console.error(error);
+      setFipeInfo('');
+    } finally {
+      setLoadingFipeInfo(false);
+    }
+  };
+
   const handleChange = (text: string) => {
     setQuery(text);
     clearTimeout(timeout);
@@ -95,15 +122,18 @@ const App = () => {
     setFilteredModels(filtered);
   };
 
-  const handleSelectBrand = (brand: string, brandCode: string) => {
-    setQuery(brand);
+  const handleSelectBrand = (brand: Brand) => {
+    setQuery(brand.name);
+    setBrandSelected(brand);
     setBrands([]);
-    fetchModels(brandCode);
+    fetchModels(brand.code);
   };
 
-  const handleSelectModel = (model: string) => {
-    setModelQuery(model);
+  const handleSelectModel = (model: Model, brandCode: string) => {
+    setModelQuery(model.name);
     setModels([]);
+
+    fetchFipeInfo(brandCode, model.code, yearCode);
   };
 
   return (
@@ -122,10 +152,7 @@ const App = () => {
           data={brands}
           keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => handleSelectBrand(item.name, item.code)}
-              style={styles.option}
-            >
+            <TouchableOpacity onPress={() => handleSelectBrand(item)} style={styles.option}>
               <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
@@ -146,12 +173,19 @@ const App = () => {
           data={filteredModels.length > 0 ? filteredModels : models}
           keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelectModel(item.name)} style={styles.option}>
+            <TouchableOpacity
+              onPress={() => handleSelectModel(item, brandSelected!.code)}
+              style={styles.option}
+            >
               <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
       )}
+
+      {loadingFipeInfo && <ActivityIndicator size="small" color="#000" />}
+
+      {fipeInfo && <Text>{fipeInfo}</Text>}
     </SafeAreaView>
   );
 };
