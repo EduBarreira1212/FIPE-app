@@ -12,9 +12,14 @@ import styles from './styles';
 
 let timeout: NodeJS.Timeout;
 
+type Brand = {
+  code: string;
+  name: string;
+};
+
 const App = () => {
   const [query, setQuery] = useState('');
-  const [brands, setBrands] = useState<string[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [modelQuery, setModelQuery] = useState('');
@@ -31,12 +36,12 @@ const App = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get(
-        `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json`
-      );
+      const res = await axios.get(`https://fipe.parallelum.com.br/api/v2/cars/brands`);
 
-      const names = res.data.Results.map((item: any) => item.MakeName);
-      setBrands(names.filter((item: string) => item.includes(query)));
+      const brands = res.data;
+      setBrands(
+        brands.filter((item: Brand) => item.name.toLowerCase().includes(query.toLowerCase()))
+      );
     } catch (error) {
       console.error(error);
       setBrands([]);
@@ -69,7 +74,7 @@ const App = () => {
   };
 
   const handleChange = (text: string) => {
-    setQuery(text.toUpperCase());
+    setQuery(text);
     clearTimeout(timeout);
 
     timeout = setTimeout(() => {
@@ -108,10 +113,10 @@ const App = () => {
       {!loading && brands.length > 0 && (
         <FlatList
           data={brands}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelectBrand(item)} style={styles.option}>
-              <Text>{item}</Text>
+            <TouchableOpacity onPress={() => handleSelectBrand(item.name)} style={styles.option}>
+              <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
