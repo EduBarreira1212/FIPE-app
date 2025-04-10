@@ -17,14 +17,19 @@ type Brand = {
   name: string;
 };
 
+type Model = {
+  code: string;
+  name: string;
+};
+
 const App = () => {
   const [query, setQuery] = useState('');
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [modelQuery, setModelQuery] = useState('');
-  const [models, setModels] = useState<string[]>([]);
-  const [filteredModels, setFilteredModels] = useState<string[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
   const fetchBrands = async (search: string) => {
@@ -50,8 +55,8 @@ const App = () => {
     }
   };
 
-  const fetchModels = async (search: string) => {
-    if (!search) {
+  const fetchModels = async (brandCode: string) => {
+    if (!brandCode) {
       setModels([]);
       return;
     }
@@ -60,11 +65,11 @@ const App = () => {
 
     try {
       const res = await axios.get(
-        `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${search}?format=json`
+        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models`
       );
 
-      const names = res.data.Results.map((item: any) => item.Model_Name);
-      setModels(names);
+      const models = res.data;
+      setModels(models);
     } catch (error) {
       console.error(error);
       setBrands([]);
@@ -84,14 +89,16 @@ const App = () => {
 
   const handleModelChange = (text: string) => {
     setModelQuery(text);
-    const filtered = models.filter((model) => model.toLowerCase().includes(text.toLowerCase()));
+    const filtered = models.filter((model) =>
+      model.name.toLowerCase().includes(text.toLowerCase())
+    );
     setFilteredModels(filtered);
   };
 
-  const handleSelectBrand = (brand: string) => {
+  const handleSelectBrand = (brand: string, brandCode: string) => {
     setQuery(brand);
     setBrands([]);
-    fetchModels(brand);
+    fetchModels(brandCode);
   };
 
   const handleSelectModel = (model: string) => {
@@ -115,7 +122,10 @@ const App = () => {
           data={brands}
           keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelectBrand(item.name)} style={styles.option}>
+            <TouchableOpacity
+              onPress={() => handleSelectBrand(item.name, item.code)}
+              style={styles.option}
+            >
               <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
@@ -134,10 +144,10 @@ const App = () => {
       {!loadingModels && models.length > 0 && (
         <FlatList
           data={filteredModels.length > 0 ? filteredModels : models}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelectModel(item)} style={styles.option}>
-              <Text>{item}</Text>
+            <TouchableOpacity onPress={() => handleSelectModel(item.name)} style={styles.option}>
+              <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
