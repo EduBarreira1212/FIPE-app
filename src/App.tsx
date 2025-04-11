@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import styles from './styles';
 
@@ -200,7 +201,15 @@ const App = () => {
 
       {loadingFipeInfo && <ActivityIndicator size="small" color="#000" />}
 
-      {fipeInfo && <Text>{fipeInfo.price}</Text>}
+      {fipeInfo && (
+        <View>
+          <Text>{fipeInfo.brand}</Text>
+          <Text>{fipeInfo.model}</Text>
+          <Text>{fipeInfo.modelYear}</Text>
+          <Text>{fipeInfo.fuel}</Text>
+          <Text>{fipeInfo.price}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
