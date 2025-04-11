@@ -98,8 +98,6 @@ const App = () => {
         `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models/${modelCode}/years/${yearCode}`
       );
 
-      console.log(res.data);
-
       const fipeInfo = res.data;
       setFipeInfo(fipeInfo);
     } catch (error) {
