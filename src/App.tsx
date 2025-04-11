@@ -33,7 +33,9 @@ const App = () => {
   const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
-  const [fipeInfo, setFipeInfo] = useState('');
+  const [year, setYear] = useState('');
+
+  const [fipeInfo, setFipeInfo] = useState<any>();
   const [loadingFipeInfo, setLoadingFipeInfo] = useState(false);
 
   const fetchBrands = async (search: string) => {
@@ -95,6 +97,8 @@ const App = () => {
         `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models/${modelCode}/years/${yearCode}`
       );
 
+      console.log(res.data);
+
       const fipeInfo = res.data;
       setFipeInfo(fipeInfo);
     } catch (error) {
@@ -122,6 +126,10 @@ const App = () => {
     setFilteredModels(filtered);
   };
 
+  const handleDateChange = (year: string) => {
+    setYear(year);
+  };
+
   const handleSelectBrand = (brand: Brand) => {
     setQuery(brand.name);
     setBrandSelected(brand);
@@ -133,7 +141,7 @@ const App = () => {
     setModelQuery(model.name);
     setModels([]);
 
-    fetchFipeInfo(brandCode, model.code, yearCode);
+    fetchFipeInfo(brandCode, model.code, `${year}-1`);
   };
 
   return (
@@ -158,6 +166,13 @@ const App = () => {
           )}
         />
       )}
+
+      <TextInput
+        placeholder="Digite um ano..."
+        value={year}
+        onChangeText={handleDateChange}
+        style={styles.input}
+      />
 
       <TextInput
         placeholder="Digite o nome de um modelo..."
@@ -185,7 +200,7 @@ const App = () => {
 
       {loadingFipeInfo && <ActivityIndicator size="small" color="#000" />}
 
-      {fipeInfo && <Text>{fipeInfo}</Text>}
+      {fipeInfo && <Text>{fipeInfo.price}</Text>}
     </SafeAreaView>
   );
 };
