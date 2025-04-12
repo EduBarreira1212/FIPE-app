@@ -63,7 +63,7 @@ const App = () => {
     }
   };
 
-  const fetchModels = async (brandCode: string) => {
+  const fetchModels = async (brandCode: string, yearId: string) => {
     if (!brandCode) {
       setModels([]);
       return;
@@ -73,7 +73,7 @@ const App = () => {
 
     try {
       const res = await axios.get(
-        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models`
+        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/years/${yearId}/models`
       );
 
       const models = res.data;
@@ -127,14 +127,20 @@ const App = () => {
   };
 
   const handleDateChange = (year: string) => {
+    if (!brandSelected) return;
     setYear(year);
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      fetchModels(brandSelected.code, `${year}-1`);
+    }, 500);
   };
 
   const handleSelectBrand = (brand: Brand) => {
     setQuery(brand.name);
     setBrandSelected(brand);
     setBrands([]);
-    fetchModels(brand.code);
   };
 
   const handleSelectModel = (model: Model, brandCode: string) => {
