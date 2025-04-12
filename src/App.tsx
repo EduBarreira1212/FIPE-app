@@ -201,11 +201,11 @@ const App = () => {
 
       {fipeInfo && (
         <View>
-          <Text>{fipeInfo.brand}</Text>
-          <Text>{fipeInfo.model}</Text>
-          <Text>{fipeInfo.modelYear}</Text>
-          <Text>{fipeInfo.fuel}</Text>
-          <Text>{fipeInfo.price}</Text>
+          <Text>Marca: {fipeInfo.brand}</Text>
+          <Text>Modelo: {fipeInfo.model}</Text>
+          <Text>Ano: {fipeInfo.modelYear}</Text>
+          <Text>Combustível: {fipeInfo.fuel}</Text>
+          <Text>Valor: {fipeInfo.price}</Text>
         </View>
       )}
     </SafeAreaView>
