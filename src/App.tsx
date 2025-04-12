@@ -11,23 +11,9 @@ import {
   View,
 } from 'react-native';
 import styles from './styles';
+import { Brand, Model, Year } from './types';
 
 let timeout: NodeJS.Timeout;
-
-type Brand = {
-  code: string;
-  name: string;
-};
-
-type Year = {
-  code: string;
-  name: string;
-};
-
-type Model = {
-  code: string;
-  name: string;
-};
 
 const App = () => {
   const [query, setQuery] = useState('');
