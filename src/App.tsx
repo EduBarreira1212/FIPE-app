@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Button,
   FlatList,
   SafeAreaView,
   Text,
@@ -143,6 +144,15 @@ const App = () => {
     fetchFipeInfo(brandCode, model.code, `${year}-1`);
   };
 
+  const handleClearClick = () => {
+    setQuery('');
+    setYear('');
+    setModelQuery('');
+    setModels([]);
+    setFilteredModels([]);
+    setFipeInfo(null);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TextInput
@@ -196,6 +206,8 @@ const App = () => {
           )}
         />
       )}
+
+      <Button title="Limpar" onPress={handleClearClick} />
 
       {loadingFipeInfo && <ActivityIndicator size="small" color="#000" />}
 
