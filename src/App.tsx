@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import styles from './styles';
 import { Brand, Model, Year } from './types';
+import { api } from './lib/axios';
 
 let timeout: NodeJS.Timeout;
 
@@ -44,7 +45,7 @@ const App = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get(`https://fipe.parallelum.com.br/api/v2/cars/brands`);
+      const res = await api.get(`/brands`);
 
       const brands = res.data;
       setBrands(
@@ -67,9 +68,7 @@ const App = () => {
     setLoadingYears(true);
 
     try {
-      const res = await axios.get(
-        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandId}/years`
-      );
+      const res = await api.get(`/brands/${brandId}/years`);
 
       const years = res.data;
       setYears(years);
@@ -90,9 +89,7 @@ const App = () => {
     setLoadingModels(true);
 
     try {
-      const res = await axios.get(
-        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/years/${yearId}/models`
-      );
+      const res = await api.get(`/brands/${brandCode}/years/${yearId}/models`);
 
       const models = res.data;
       setModels(models);
@@ -113,9 +110,7 @@ const App = () => {
     setLoadingFipeInfo(true);
 
     try {
-      const res = await axios.get(
-        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandCode}/models/${modelCode}/years/${yearCode}`
-      );
+      const res = await api.get(`/brands/${brandCode}/models/${modelCode}/years/${yearCode}`);
 
       const fipeInfo = res.data;
       setFipeInfo(fipeInfo);
