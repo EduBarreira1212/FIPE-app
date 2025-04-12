@@ -19,6 +19,11 @@ type Brand = {
   name: string;
 };
 
+type Year = {
+  code: string;
+  name: string;
+};
+
 type Model = {
   code: string;
   name: string;
@@ -35,7 +40,11 @@ const App = () => {
   const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
-  const [year, setYear] = useState('');
+  const [yearQuery, setYearQuery] = useState('');
+  const [years, setYears] = useState<Year[]>([]);
+  const [filteredYears, setFilteredYears] = useState<Year[]>([]);
+  const [yearSelected, setYearSelected] = useState<Year>();
+  const [loadingYears, setLoadingYears] = useState(false);
 
   const [fipeInfo, setFipeInfo] = useState<any>();
   const [loadingFipeInfo, setLoadingFipeInfo] = useState(false);
@@ -60,6 +69,29 @@ const App = () => {
       setBrands([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchYears = async (brandId: string) => {
+    if (!brandId) {
+      setYears([]);
+      return;
+    }
+
+    setLoadingYears(true);
+
+    try {
+      const res = await axios.get(
+        `https://fipe.parallelum.com.br/api/v2/cars/brands/${brandId}/years`
+      );
+
+      const years = res.data;
+      setYears(years);
+    } catch (error) {
+      console.error(error);
+      setYears([]);
+    } finally {
+      setLoadingYears(false);
     }
   };
 
@@ -126,33 +158,45 @@ const App = () => {
     setFilteredModels(filtered);
   };
 
-  const handleDateChange = (year: string) => {
-    if (!brandSelected) return;
-    setYear(year);
+  const handleYearChange = (text: string) => {
+    setYearQuery(text);
 
-    clearTimeout(timeout);
+    const filtered = years.filter((year) => year.name.toLowerCase().includes(text.toLowerCase()));
 
-    timeout = setTimeout(() => {
-      fetchModels(brandSelected.code, `${year}-1`);
-    }, 500);
+    setFilteredYears(filtered);
   };
 
   const handleSelectBrand = (brand: Brand) => {
     setQuery(brand.name);
     setBrandSelected(brand);
     setBrands([]);
+    fetchYears(brand.code);
+  };
+
+  const handleSelectYear = (year: Year) => {
+    setYearQuery(year.name);
+    setYearSelected(year);
+    setYears([]);
+
+    if (!brandSelected) return;
+
+    fetchModels(brandSelected.code, year.code);
   };
 
   const handleSelectModel = (model: Model, brandCode: string) => {
     setModelQuery(model.name);
     setModels([]);
 
-    fetchFipeInfo(brandCode, model.code, `${year}-1`);
+    if (!yearSelected) return;
+
+    fetchFipeInfo(brandCode, model.code, yearSelected.code);
   };
 
   const handleClearClick = () => {
     setQuery('');
-    setYear('');
+    setYearQuery('');
+    setFilteredYears([]);
+    setYearSelected(undefined);
     setModelQuery('');
     setModels([]);
     setFilteredModels([]);
@@ -184,10 +228,22 @@ const App = () => {
 
       <TextInput
         placeholder="Digite um ano..."
-        value={year}
-        onChangeText={handleDateChange}
+        value={yearQuery}
+        onChangeText={handleYearChange}
         style={styles.input}
       />
+
+      {!loadingYears && years.length > 0 && (
+        <FlatList
+          data={filteredYears.length > 0 ? filteredYears : years}
+          keyExtractor={(item) => item.code}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleSelectYear(item)} style={styles.option}>
+              <Text>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
       <TextInput
         placeholder="Digite o nome de um modelo..."
