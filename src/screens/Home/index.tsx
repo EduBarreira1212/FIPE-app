@@ -10,6 +10,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Home Screen</Text>
       <Button onPress={() => navigation.navigate('VehicleFipe')}>Search FIPE by vehicle</Button>
+      <Button onPress={() => navigation.navigate('PlateFipe')}>Search FIPE by plate</Button>
     </View>
   );
 };
