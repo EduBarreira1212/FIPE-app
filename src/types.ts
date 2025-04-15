@@ -1,3 +1,9 @@
+export type RootStackParamList = {
+  Home: undefined;
+  VehicleFipe: undefined;
+  PlateFipe: undefined;
+};
+
 export type Brand = {
   code: string;
   name: string;
