@@ -3,16 +3,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import VehicleFipeScreen from '../screens/VehicleFipe';
 import HomeScreen from '../screens/Home';
+import { RootStackParamList } from '../types';
 
-const Stack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const Navigation = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="VehicleFipe" component={VehicleFipeScreen} />
-      </Stack.Navigator>
+      <RootStack.Navigator initialRouteName="Home">
+        <RootStack.Screen name="Home" component={HomeScreen} />
+        <RootStack.Screen name="VehicleFipe" component={VehicleFipeScreen} />
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 };
