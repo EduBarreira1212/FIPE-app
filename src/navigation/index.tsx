@@ -12,9 +12,33 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">
-        <RootStack.Screen name="Home" component={HomeScreen} />
-        <RootStack.Screen name="VehicleFipe" component={VehicleFipeScreen} />
-        <RootStack.Screen name="PlateFipe" component={PlateFipeScreen} />
+        <RootStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerStyle: { backgroundColor: 'black' },
+            headerTintColor: 'white',
+            headerTitleAlign: 'center',
+          }}
+        />
+        <RootStack.Screen
+          name="VehicleFipe"
+          component={VehicleFipeScreen}
+          options={{
+            headerStyle: { backgroundColor: 'black' },
+            headerTintColor: 'white',
+            headerTitleAlign: 'center',
+          }}
+        />
+        <RootStack.Screen
+          name="PlateFipe"
+          component={PlateFipeScreen}
+          options={{
+            headerStyle: { backgroundColor: 'black' },
+            headerTintColor: 'white',
+            headerTitleAlign: 'center',
+          }}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
