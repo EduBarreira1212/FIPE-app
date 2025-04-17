@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Keyboard,
   SafeAreaView,
   Text,
   TextInput,
@@ -117,6 +118,7 @@ const VehicleFipeScreen = () => {
   };
 
   const handleSelectBrand = (brand: Brand) => {
+    Keyboard.dismiss();
     setQuery(brand.name);
     setBrandSelected(brand);
     setBrands([]);
@@ -124,6 +126,7 @@ const VehicleFipeScreen = () => {
   };
 
   const handleSelectYear = (year: Year) => {
+    Keyboard.dismiss();
     setYearQuery(year.name);
     setYearSelected(year);
     setYears([]);
@@ -132,6 +135,7 @@ const VehicleFipeScreen = () => {
   };
 
   const handleSelectModel = (model: Model, brandCode: string) => {
+    Keyboard.dismiss();
     setModelQuery(model.name);
     setModels([]);
     if (!yearSelected) return;
