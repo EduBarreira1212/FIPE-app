@@ -1,8 +1,6 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   SafeAreaView,
   Text,
@@ -13,6 +11,7 @@ import {
 import styles from './styles';
 import { Brand, Model, Year } from '../../types';
 import { api } from '../../lib/axios';
+import { Button } from '@react-navigation/elements';
 
 let timeout: NodeJS.Timeout;
 
@@ -37,16 +36,11 @@ const VehicleFipeScreen = () => {
   const [loadingFipeInfo, setLoadingFipeInfo] = useState(false);
 
   const fetchBrands = async (search: string) => {
-    if (!search) {
-      setBrands([]);
-      return;
-    }
+    if (!search) return setBrands([]);
 
     setLoading(true);
-
     try {
       const res = await api.get(`/brands`);
-
       const brands = res.data;
       setBrands(
         brands.filter((item: Brand) => item.name.toLowerCase().includes(query.toLowerCase()))
@@ -60,18 +54,12 @@ const VehicleFipeScreen = () => {
   };
 
   const fetchYears = async (brandId: string) => {
-    if (!brandId) {
-      setYears([]);
-      return;
-    }
+    if (!brandId) return setYears([]);
 
     setLoadingYears(true);
-
     try {
       const res = await api.get(`/brands/${brandId}/years`);
-
-      const years = res.data;
-      setYears(years);
+      setYears(res.data);
     } catch (error) {
       console.error(error);
       setYears([]);
@@ -81,42 +69,30 @@ const VehicleFipeScreen = () => {
   };
 
   const fetchModels = async (brandCode: string, yearId: string) => {
-    if (!brandCode) {
-      setModels([]);
-      return;
-    }
+    if (!brandCode) return setModels([]);
 
     setLoadingModels(true);
-
     try {
       const res = await api.get(`/brands/${brandCode}/years/${yearId}/models`);
-
-      const models = res.data;
-      setModels(models);
+      setModels(res.data);
     } catch (error) {
       console.error(error);
-      setBrands([]);
+      setModels([]);
     } finally {
       setLoadingModels(false);
     }
   };
 
   const fetchFipeInfo = async (brandCode: string, modelCode: string, yearCode: string) => {
-    if (!(brandCode && modelCode && yearCode)) {
-      setFipeInfo('');
-      return;
-    }
+    if (!(brandCode && modelCode && yearCode)) return setFipeInfo(null);
 
     setLoadingFipeInfo(true);
-
     try {
       const res = await api.get(`/brands/${brandCode}/models/${modelCode}/years/${yearCode}`);
-
-      const fipeInfo = res.data;
-      setFipeInfo(fipeInfo);
+      setFipeInfo(res.data);
     } catch (error) {
       console.error(error);
-      setFipeInfo('');
+      setFipeInfo(null);
     } finally {
       setLoadingFipeInfo(false);
     }
@@ -125,26 +101,19 @@ const VehicleFipeScreen = () => {
   const handleChange = (text: string) => {
     setQuery(text);
     clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-      fetchBrands(text);
-    }, 500);
+    timeout = setTimeout(() => fetchBrands(text), 500);
   };
 
   const handleModelChange = (text: string) => {
     setModelQuery(text);
-    const filtered = models.filter((model) =>
-      model.name.toLowerCase().includes(text.toLowerCase())
+    setFilteredModels(
+      models.filter((model) => model.name.toLowerCase().includes(text.toLowerCase()))
     );
-    setFilteredModels(filtered);
   };
 
   const handleYearChange = (text: string) => {
     setYearQuery(text);
-
-    const filtered = years.filter((year) => year.name.toLowerCase().includes(text.toLowerCase()));
-
-    setFilteredYears(filtered);
+    setFilteredYears(years.filter((year) => year.name.toLowerCase().includes(text.toLowerCase())));
   };
 
   const handleSelectBrand = (brand: Brand) => {
@@ -158,18 +127,14 @@ const VehicleFipeScreen = () => {
     setYearQuery(year.name);
     setYearSelected(year);
     setYears([]);
-
     if (!brandSelected) return;
-
     fetchModels(brandSelected.code, year.code);
   };
 
   const handleSelectModel = (model: Model, brandCode: string) => {
     setModelQuery(model.name);
     setModels([]);
-
     if (!yearSelected) return;
-
     fetchFipeInfo(brandCode, model.code, yearSelected.code);
   };
 
@@ -186,19 +151,19 @@ const VehicleFipeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.label}>Marca</Text>
       <TextInput
         placeholder="Digite o nome de uma marca..."
         value={query}
         onChangeText={handleChange}
         style={styles.input}
       />
-
       {loading && <ActivityIndicator size="small" color="#000" />}
-
       {!loading && brands.length > 0 && (
         <FlatList
           data={brands}
           keyExtractor={(item) => item.code}
+          style={{ maxHeight: 200 }}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleSelectBrand(item)} style={styles.option}>
               <Text>{item.name}</Text>
@@ -207,13 +172,13 @@ const VehicleFipeScreen = () => {
         />
       )}
 
+      <Text style={styles.label}>Ano</Text>
       <TextInput
         placeholder="Digite um ano..."
         value={yearQuery}
         onChangeText={handleYearChange}
         style={styles.input}
       />
-
       {!loadingYears && years.length > 0 && (
         <FlatList
           data={filteredYears.length > 0 ? filteredYears : years}
@@ -226,15 +191,14 @@ const VehicleFipeScreen = () => {
         />
       )}
 
+      <Text style={styles.label}>Modelo</Text>
       <TextInput
         placeholder="Digite o nome de um modelo..."
         value={modelQuery}
         onChangeText={handleModelChange}
         style={styles.input}
       />
-
       {loadingModels && <ActivityIndicator size="small" color="#000" />}
-
       {!loadingModels && models.length > 0 && (
         <FlatList
           data={filteredModels.length > 0 ? filteredModels : models}
@@ -250,17 +214,19 @@ const VehicleFipeScreen = () => {
         />
       )}
 
-      <Button title="Limpar" onPress={handleClearClick} />
+      <Button onPress={handleClearClick} style={styles.clearButton} color="white">
+        Limpar
+      </Button>
 
       {loadingFipeInfo && <ActivityIndicator size="small" color="#000" />}
 
       {fipeInfo && (
-        <View>
-          <Text>Marca: {fipeInfo.brand}</Text>
-          <Text>Modelo: {fipeInfo.model}</Text>
-          <Text>Ano: {fipeInfo.modelYear}</Text>
-          <Text>Combustível: {fipeInfo.fuel}</Text>
-          <Text>Valor: {fipeInfo.price}</Text>
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>Marca: {fipeInfo.brand}</Text>
+          <Text style={styles.resultText}>Modelo: {fipeInfo.model}</Text>
+          <Text style={styles.resultText}>Ano: {fipeInfo.modelYear}</Text>
+          <Text style={styles.resultText}>Combustível: {fipeInfo.fuel}</Text>
+          <Text style={styles.resultText}>Valor: {fipeInfo.price}</Text>
         </View>
       )}
     </SafeAreaView>
