@@ -31,6 +31,7 @@ export default StyleSheet.create({
   },
   clearButton: {
     marginTop: 20,
+   marginBottom: 20, 
     backgroundColor: '#e74c3c',
     borderRadius: 8,
   },
