@@ -21,6 +21,7 @@ export default StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#ccc',
+    marginBottom: 8,
   },
   option: {
     padding: 12,
