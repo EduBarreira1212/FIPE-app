@@ -164,6 +164,7 @@ const VehicleFipeScreen = () => {
           data={brands}
           keyExtractor={(item) => item.code}
           style={{ maxHeight: 200 }}
+          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleSelectBrand(item)} style={styles.option}>
               <Text>{item.name}</Text>
@@ -183,6 +184,7 @@ const VehicleFipeScreen = () => {
         <FlatList
           data={filteredYears.length > 0 ? filteredYears : years}
           keyExtractor={(item) => item.code}
+          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleSelectYear(item)} style={styles.option}>
               <Text>{item.name}</Text>
@@ -203,6 +205,7 @@ const VehicleFipeScreen = () => {
         <FlatList
           data={filteredModels.length > 0 ? filteredModels : models}
           keyExtractor={(item) => item.code}
+          ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => handleSelectModel(item, brandSelected!.code)}
