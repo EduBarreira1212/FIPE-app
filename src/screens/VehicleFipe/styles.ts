@@ -47,4 +47,9 @@ export default StyleSheet.create({
     marginBottom: 8,
     color: '#333',
   },
+  noResults: {
+    marginTop: 8,
+    color: '#999',
+    fontStyle: 'italic',
+  },
 });
