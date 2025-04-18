@@ -163,6 +163,10 @@ const VehicleFipeScreen = () => {
         style={styles.input}
       />
       {loading && <ActivityIndicator size="small" color="#000" />}
+      {!loading && brands.length === 0 && query.length > 0 && (
+        <Text style={styles.noResults}>Nenhuma marca encontrada.</Text>
+      )}
+
       {!loading && brands.length > 0 && (
         <FlatList
           data={brands}
